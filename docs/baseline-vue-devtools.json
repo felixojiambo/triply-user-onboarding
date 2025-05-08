@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "exportedAt": "2025-05-09T00:35:00Z",
+    "vueVersion": "3.x.x",
+    "devtoolsVersion": "6.x.x",
+    "note": "Baseline snapshot showing App as root with HelloWorld as child. Includes setup state and render code."
+  },
+  "componentTree": {
+    "App": {
+      "tags": ["fragment"],
+      "setupState": {
+        "HelloWorld": "HelloWorld"
+      },
+      "renderCode": "function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {\n  return _openBlock(), _createElementBlock(\n    _Fragment,\n    null,\n    [\n      _cache[0] || (_cache[0] = _createElementVNode(\n        \"div\",\n        null,\n        [\n          _createElementVNode(\"a\", {\n            href: \"https://vite.dev\",\n            target: \"_blank\"\n          }, [\n            _createElementVNode(\"img\", {\n              src: _imports_0,\n              class: \"logo\",\n              alt: \"Vite logo\"\n            })\n          ]),\n          _createElementVNode(\"a\", {\n            href: \"https://vuejs.org/\",\n            target: \"_blank\"\n          }, [\n            _createElementVNode(\"img\", {\n              src: \"/src/assets/vue.svg\",\n              class: \"logo vue\",\n              alt: \"Vue logo\"\n            })\n          ])\n        ],\n        -1\n        /* HOISTED */\n      )),\n      _createVNode($setup[\"HelloWorld\"], { msg: \"Vite + Vue\" })\n    ],\n    64\n    /* STABLE_FRAGMENT */\n  );\n}",
+      "children": {
+        "HelloWorld": {
+          "tags": ["fragment"],
+          "props": {
+            "msg": "Vite + Vue"
+          },
+          "state": {}
+        }
+      }
+    }
+  },
+  "state": {
+    "pinia": {
+      "stores": []
+    }
+  }
+}
