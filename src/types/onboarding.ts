@@ -14,12 +14,15 @@ export interface BusinessDetails {
   businessDocument: File;    // PDF ≤ 5 MB
 }
 
-export type CompanySize =
-  | '1-10'
-  | '11-50'
-  | '51-200'
-  | '201-500'
-  | '500+';
+export const CompanySize = {
+  Small: '1-10',
+  MediumSmall: '11-50',
+  Medium: '51-200',
+  MediumLarge: '201-500',
+  Large: '500+',
+} as const;
+
+export type CompanySize = (typeof CompanySize)[keyof typeof CompanySize];
 
 export interface VerificationState {
   emailCode: string;         // 6-digit numeric
