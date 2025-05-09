@@ -72,4 +72,13 @@ export const handlers = [
 
     return HttpResponse.json({ success: true }, { status: 200 });
   }),
+  // POST /api/log → swallow error logs
+  http.post('/api/log', async ({ request }) => {
+    // Cast the unknown body to our expected shape
+    const body = (await request.json()) as { error: string; info: string };
+    const { error, info } = body;
+
+    console.debug('[LOG ENDPOINT]', { error, info });
+    return HttpResponse.json({}, { status: 200 });
+  }),
 ];
