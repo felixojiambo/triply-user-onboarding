@@ -1,149 +1,164 @@
 <template>
-  <form @submit.prevent="onSubmit" aria-labelledby="step1-title">
-    <h2 id="step1-title" class="text-xl font-semibold mb-4">Personal Details</h2>
+  <form @submit.prevent="onSubmit" aria-labelledby="step1-title" class="space-y-6">
+    <h2 id="step1-title" class="text-2xl font-semibold">Personal Details</h2>
 
-    <fieldset class="mb-4">
+    <!-- Name Fields -->
+    <fieldset class="space-y-4">
       <legend class="sr-only">Name</legend>
 
-      <label for="firstName" class="block">First Name</label>
-      <input
-        id="firstName"
-        v-model="data.firstName"
-        :aria-invalid="!!errors.firstName"
-        required
-        class="w-full"
-      />
-      <div
-        v-if="errors.firstName"
-        class="text-red-600 mt-1"
-        role="alert"
-        aria-live="polite"
-      >
-        {{ errors.firstName }}
+      <div>
+        <label for="firstName" class="block mb-1 font-medium">First Name</label>
+        <input
+          id="firstName"
+          ref="firstNameRef"
+          v-model="data.firstName"
+          :aria-invalid="!!errors.firstName"
+          class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
+        />
+        <p v-if="errors.firstName" class="mt-1 text-red-600" role="alert" aria-live="polite">
+          {{ errors.firstName }}
+        </p>
       </div>
 
-      <label for="lastName" class="block mt-4">Last Name</label>
-      <input
-        id="lastName"
-        v-model="data.lastName"
-        :aria-invalid="!!errors.lastName"
-        required
-        class="w-full"
-      />
-      <div
-        v-if="errors.lastName"
-        class="text-red-600 mt-1"
-        role="alert"
-        aria-live="polite"
-      >
-        {{ errors.lastName }}
+      <div>
+        <label for="lastName" class="block mb-1 font-medium">Last Name</label>
+        <input
+          id="lastName"
+          v-model="data.lastName"
+          :aria-invalid="!!errors.lastName"
+          class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
+        />
+        <p v-if="errors.lastName" class="mt-1 text-red-600" role="alert" aria-live="polite">
+          {{ errors.lastName }}
+        </p>
       </div>
     </fieldset>
 
-    <fieldset class="mb-4">
+    <!-- Contact Fields -->
+    <fieldset class="space-y-4">
       <legend class="sr-only">Contact</legend>
 
-      <label for="email" class="block">Email</label>
-      <input
-        id="email"
-        type="email"
-        v-model="data.email"
-        :aria-invalid="!!errors.email"
-        required
-        class="w-full"
-      />
-      <div
-        v-if="errors.email"
-        class="text-red-600 mt-1"
-        role="alert"
-        aria-live="polite"
-      >
-        {{ errors.email }}
+      <div>
+        <label for="email" class="block mb-1 font-medium">Email</label>
+        <input
+          id="email"
+          type="email"
+          v-model="data.email"
+          :aria-invalid="!!errors.email"
+          class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
+        />
+        <p v-if="errors.email" class="mt-1 text-red-600" role="alert" aria-live="polite">
+          {{ errors.email }}
+        </p>
       </div>
 
-      <label for="phone" class="block mt-4">Phone</label>
-      <input
-        id="phone"
-        type="tel"
-        v-model="data.phone"
-        :aria-invalid="!!errors.phone"
-        required
-        class="w-full"
-      />
-      <div
-        v-if="errors.phone"
-        class="text-red-600 mt-1"
-        role="alert"
-        aria-live="polite"
-      >
-        {{ errors.phone }}
+      <div>
+        <label for="phone" class="block mb-1 font-medium">Phone</label>
+        <input
+          id="phone"
+          type="tel"
+          v-model="data.phone"
+          :aria-invalid="!!errors.phone"
+          class="w-full px-3 py-2 border rounded dark:bg-gray-800 dark:border-gray-700 focus:ring-2 focus:ring-blue-500"
+        />
+        <p v-if="errors.phone" class="mt-1 text-red-600" role="alert" aria-live="polite">
+          {{ errors.phone }}
+        </p>
       </div>
     </fieldset>
 
-    <fieldset class="mb-6">
+    <!-- Profile Image -->
+    <fieldset class="space-y-4">
       <legend class="sr-only">Profile Image</legend>
 
-      <label for="profileImage" class="block">Profile Image</label>
-      <input
-        id="profileImage"
-        type="file"
-        accept="image/jpeg,image/png"
-        @change="onFileChange"
-        :aria-invalid="!!errors.profileImage"
-        class="w-full"
-      />
-      <div
-        v-if="errors.profileImage"
-        class="text-red-600 mt-1"
-        role="alert"
-        aria-live="polite"
-      >
-        {{ errors.profileImage }}
+      <div>
+        <label for="profileImage" class="block mb-1 font-medium">Profile Image</label>
+        <input
+          id="profileImage"
+          type="file"
+          accept="image/jpeg,image/png"
+          @change="onFileChange"
+          :aria-invalid="!!errors.profileImage"
+          class="w-full"
+        />
+        <p v-if="errors.profileImage" class="mt-1 text-red-600" role="alert" aria-live="polite">
+          {{ errors.profileImage }}
+        </p>
       </div>
+
+      <img
+        v-if="previewUrl"
+        :src="previewUrl"
+        alt="Profile preview"
+        class="mt-2 w-24 h-24 object-cover rounded-full border"
+      />
     </fieldset>
 
-    <button type="button" @click="emit('back')" class="mr-2">Back</button>
-    <button type="submit">Next</button>
+    <!-- Navigation Buttons -->
+    <div class="flex justify-between">
+      <button
+        type="button"
+        @click="emit('back')"
+        class="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+      >
+        Back
+      </button>
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+      >
+        Next
+      </button>
+    </div>
   </form>
 </template>
 
 <script setup lang="ts">
+import { ref, reactive, onMounted } from 'vue';
+import { personalDetailsSchema } from '@/schemas/onboarding';
 import type { PersonalDetails } from '@/types/onboarding';
-import { reactive, ref } from 'vue';
 
-const props = defineProps<{
-  initialData?: Partial<PersonalDetails>;
-}>();
-
+const props = defineProps<{ initialData?: Partial<PersonalDetails> }>();
 const emit = defineEmits<{
   (e: 'complete', payload: PersonalDetails): void;
   (e: 'back'): void;
 }>();
 
 const data = reactive<Partial<PersonalDetails>>({ ...props.initialData });
-const errors = reactive<Partial<Record<keyof PersonalDetails, string>>>({});
+const errors = reactive<Record<keyof PersonalDetails, string>>({
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  profileImage: '',
+});
+const previewUrl = ref<string | null>(null);
+const firstNameRef = ref<HTMLInputElement>();
 
-// simple on-the-fly validation example
-function validate(): boolean {
-  Object.assign(errors, {});
-  if (!data.firstName) errors.firstName = 'First name is required';
-  if (!data.lastName) errors.lastName = 'Last name is required';
-  if (!data.email || !/\S+@\S+\.\S+/.test(data.email))
-    errors.email = 'Valid email is required';
-  if (!data.phone || !/^\+?\d{7,15}$/.test(data.phone))
-    errors.phone = 'Valid phone is required';
-  if (!data.profileImage) errors.profileImage = 'Profile image is required';
-  return Object.keys(errors).length === 0;
-}
+onMounted(() => {
+  firstNameRef.value?.focus();
+});
 
 function onFileChange(e: Event) {
-  const file = (e.target as HTMLInputElement).files?.[0] || null;
+  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
   data.profileImage = file as File;
+  previewUrl.value = file ? URL.createObjectURL(file) : null;
 }
 
 function onSubmit() {
-  if (validate()) {
-    emit('complete', data as PersonalDetails);
+  // Reset errors
+  Object.keys(errors).forEach(key => (errors[key as keyof PersonalDetails] = ''));
+
+  const result = personalDetailsSchema.safeParse(data);
+  if (!result.success) {
+    const fieldErrors = result.error.flatten().fieldErrors;
+    for (const key in fieldErrors) {
+      const msg = fieldErrors[key]?.[0] ?? '';
+      (errors as any)[key] = msg;
+    }
+    return;
   }
+
+  emit('complete', result.data);
 }
 </script>
