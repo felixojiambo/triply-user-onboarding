@@ -5,18 +5,28 @@ import type {
   VerificationState,
 } from '@/types/onboarding'
 
+// Export the store state shape for use in typings
+export interface OnboardingState {
+  currentStep: number
+  personal: PersonalDetails
+  business: BusinessDetails
+  verification: VerificationState
+  loading: boolean
+  errors: Record<string, string>
+}
+
 export const useOnboardingStore = defineStore('onboarding', {
-  state: () => ({
-    currentStep: 1 as number,
+  state: (): OnboardingState => ({
+    currentStep: 1,
     personal: {} as PersonalDetails,
     business: {} as BusinessDetails,
     verification: {
       emailCode: '',
       isCodeSent: false,
       isVerified: false,
-    } as VerificationState,
-    loading: false as boolean,
-    errors: {} as Record<string, string>,
+    },
+    loading: false,
+    errors: {},
   }),
   actions: {
     next() {
