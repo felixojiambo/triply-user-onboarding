@@ -1,17 +1,31 @@
 <template>
-  <div class="max-w-lg mx-auto p-4">
-    <Stepper
-      :steps="['Personal','Business','Verify']"
-      :current="store.currentStep"
-      @navigate="goToStep"
-    />
+  <div class="lg:grid lg:grid-cols-[200px_1fr] lg:gap-6">
+    <!-- Desktop Sidebar -->
+    <aside class="hidden lg:block p-4 border-r dark:border-gray-700">
+      <SidebarStepper
+        :steps="['Personal','Business','Verify']"
+        :current="store.currentStep"
+        @navigate="goToStep"
+      />
+    </aside>
 
-    <component
-      :is="currentComponent"
-      :initialData="initialData"
-      @complete="handleComplete"
-      @back="store.prev()"
-    />
+    <!-- Main Content -->
+    <div class="p-4 max-w-lg mx-auto">
+      <!-- Horizontal Stepper (mobile + tablet) -->
+      <Stepper
+        :steps="['Personal','Business','Verify']"
+        :current="store.currentStep"
+        @navigate="goToStep"
+      />
+
+      <!-- Dynamic Step Component -->
+      <component
+        :is="currentComponent"
+        :initialData="initialData"
+        @complete="handleComplete"
+        @back="store.prev()"
+      />
+    </div>
   </div>
 </template>
 
@@ -22,6 +36,7 @@ import Step2 from './Step2BusinessDetails.vue'
 import Step3 from './Step3VerificationSummary.vue'
 import { useOnboardingStore } from '@/store/onboarding'
 import Stepper from './Stepper.vue'
+import SidebarStepper from './SidebarStepper.vue'
 
 const store = useOnboardingStore()
 
@@ -52,7 +67,7 @@ function handleComplete(payload: any) {
     store.next()
   } else {
     store.updateVerification(payload)
-    // next will submit in Phase 7
+    // will submit in Phase 7
   }
 }
 </script>
