@@ -1,0 +1,11 @@
+# Enforce LF for all text files
+* text=auto eol=lf
+
+# Set specific file types to LF
+*.vue text eol=lf
+*.ts text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.html text eol=lf
