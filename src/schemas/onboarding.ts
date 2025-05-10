@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { CompanySize } from '@/types/onboarding';
-
 // Reusable file validators
 const fileType = (types: string[]) =>
   (file: File) => types.includes(file.type);
