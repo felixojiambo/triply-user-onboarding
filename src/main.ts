@@ -1,13 +1,20 @@
+// src/main.ts
+import './index.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { localStoragePlugin } from '@/plugins/piniaLocalStorage'
 import App from './App.vue'
-// Only start MSW in development
+import { localStoragePlugin } from '@/plugins/piniaLocalStorage'
+
+// 1️⃣ Start MSW in dev, before anything else
 if (import.meta.env.DEV) {
-  import('@/mocks/browser')
-    .then(({ worker }) => worker.start({ onUnhandledRequest: 'bypass' }))
-    .catch(err => console.error('Failed to start MSW', err))
+  const { worker } = await import('@/mocks/browser')
+  await worker.start({
+    serviceWorker: { url: '/mockServiceWorker.js' }, // ← matches public/
+    onUnhandledRequest: 'bypass',                    // or 'error' to debug
+  })
 }
+
+// 2️⃣ Then wire up Pinia + mount your Vue app
 const pinia = createPinia()
 pinia.use(localStoragePlugin)
 
