@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import OnboardingWizard from '@/components/OnboardingWizard.vue'
+import OnboardingLayout from '@/components/OnboardingLayout.vue'
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-    <OnboardingWizard />
-  </div>
+  <OnboardingLayout />
 </template>
 
 <style scoped>
-
 </style>
