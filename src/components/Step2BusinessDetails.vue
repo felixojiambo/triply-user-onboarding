@@ -17,14 +17,14 @@
             id="businessName"
             ref="businessNameRef"
             v-model="data.businessName"
-            :aria-invalid="!!errors.businessName"
+            :aria-invalid="!!localErrors.businessName"
             placeholder="Enter your business name"
             type="text"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
                    dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           />
-          <p v-if="errors.businessName" class="mt-1 text-sm text-red-600 dark:text-red-400">
-            {{ errors.businessName }}
+          <p v-if="localErrors.businessName" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ localErrors.businessName }}
           </p>
         </div>
 
@@ -36,9 +36,9 @@
           <select
             id="industry"
             v-model="data.industry"
-            :aria-invalid="!!errors.industry"
             :disabled="isLoadingIndustries"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
+            :aria-invalid="!!fetchIndustryError"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
                    dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           >
             <option value="" disabled>Select an industry</option>
@@ -47,10 +47,10 @@
             </option>
           </select>
           <p v-if="isLoadingIndustries" class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Loading industries...
+            Loading industries…
           </p>
-          <p v-else-if="errors.industry" class="mt-1 text-sm text-red-600 dark:text-red-400">
-            {{ errors.industry }}
+          <p v-else-if="fetchIndustryError" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ fetchIndustryError }}
           </p>
         </div>
 
@@ -62,8 +62,8 @@
           <select
             id="companySize"
             v-model="data.companySize"
-            :aria-invalid="!!errors.companySize"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
+            :aria-invalid="!!localErrors.companySize"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
                    dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           >
             <option value="" disabled>Select size</option>
@@ -71,11 +71,10 @@
             <option value="11-50">11-50 employees</option>
             <option value="51-200">51-200 employees</option>
             <option value="201-500">201-500 employees</option>
-            <!-- corrected to match enum '500+' -->
             <option value="500+">500+ employees</option>
           </select>
-          <p v-if="errors.companySize" class="mt-1 text-sm text-red-600 dark:text-red-400">
-            {{ errors.companySize }}
+          <p v-if="localErrors.companySize" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ localErrors.companySize }}
           </p>
         </div>
       </div>
@@ -85,19 +84,22 @@
         <legend class="text-lg font-medium text-gray-700 dark:text-gray-300">
           Business Logo (JPG/PNG ≤ 2 MB)
         </legend>
-        <div class="max-w-xs">
+        <div class="max-w-xs space-y-2">
           <input
             id="businessLogo"
             type="file"
             accept="image/jpeg,image/png"
             @change="onLogoFileChange"
-            :aria-invalid="!!errors.businessLogo"
+            :aria-invalid="!!localErrors.businessLogo"
             class="w-full block file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
                    file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
                    hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
           />
-          <p v-if="errors.businessLogo" class="mt-1 text-sm text-red-600 dark:text-red-400">
-            {{ errors.businessLogo }}
+          <p v-if="showLogoReuploadWarning" class="text-yellow-600 dark:text-yellow-400 text-sm">
+            Please re-upload your business logo.
+          </p>
+          <p v-if="localErrors.businessLogo" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ localErrors.businessLogo }}
           </p>
           <div v-if="logoPreviewUrl" class="logo-preview mt-3">
             <img :src="logoPreviewUrl" alt="Business logo preview" />
@@ -105,29 +107,31 @@
         </div>
       </fieldset>
 
-      <!-- Document Upload -->
+      <!-- Business Document Upload -->
       <fieldset class="space-y-4">
         <legend class="text-lg font-medium text-gray-700 dark:text-gray-300">
           Business Document (PDF ≤ 5 MB)
         </legend>
-        <div class="max-w-xs">
+        <div class="max-w-xs space-y-2">
           <input
             id="businessDocument"
             type="file"
             accept="application/pdf"
             @change="onDocFileChange"
-            :aria-invalid="!!errors.businessDocument"
+            :aria-invalid="!!localErrors.businessDocument"
             class="w-full block file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
                    file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
                    hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
           />
-          <p v-if="errors.businessDocument" class="mt-1 text-sm text-red-600 dark:text-red-400">
-            {{ errors.businessDocument }}
+          <p v-if="showDocReuploadWarning" class="text-yellow-600 dark:text-yellow-400 text-sm">
+            Please re-upload your business document.
           </p>
-          <div v-if="data.businessDocument" class="mt-2 text-sm text-gray-600 dark:text-gray-400 flex items-center">
-            <span class="mr-2">📄</span>
-            {{ data.businessDocument.name }}
-          </div>
+          <p v-if="localErrors.businessDocument" class="mt-1 text-sm text-red-600 dark:text-red-400">
+            {{ localErrors.businessDocument }}
+          </p>
+          <p v-if="showDocPreview" class="mt-2 text-sm text-gray-600 dark:text-gray-400 flex items-center">
+            <span class="mr-2">📄</span>{{ data.businessDocument?.name }}
+          </p>
         </div>
       </fieldset>
 
@@ -136,14 +140,16 @@
         <button
           type="button"
           @click="emit('back')"
-          class="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100
-                 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          :disabled="isLoadingIndustries"
+          class="px-5 py-2 border rounded-md text-gray-700 hover:bg-gray-100
+                 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 disabled:opacity-50"
         >
           ← Back
         </button>
         <button
           type="submit"
-          class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          :disabled="isLoadingIndustries"
+          class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
         >
           Next →
         </button>
@@ -158,7 +164,6 @@ import { businessDetailsSchema } from '@/schemas/onboarding'
 import type { BusinessDetails } from '@/types/onboarding'
 import { useOnboardingStore } from '@/store/onboarding'
 
-// 1. Props & emits at top level
 const props = defineProps<{ initialData?: Partial<BusinessDetails> }>()
 const emit = defineEmits<{
   (e: 'complete', payload: BusinessDetails): void
@@ -167,11 +172,10 @@ const emit = defineEmits<{
 
 const store = useOnboardingStore()
 
-// 2. Reactive local state
+// Reactive local state
 const industries = ref<{ id: string; name: string }[]>([])
-const isLoadingIndustries = computed(() => store.loading)
 const data = reactive<Partial<BusinessDetails>>({ ...(props.initialData ?? {}) })
-const errors = reactive<Record<keyof BusinessDetails, string>>({
+const localErrors = reactive<Record<keyof BusinessDetails, string>>({
   businessName: '',
   industry: '',
   companySize: '',
@@ -181,32 +185,38 @@ const errors = reactive<Record<keyof BusinessDetails, string>>({
 const logoPreviewUrl = ref<string | null>(null)
 const businessNameRef = ref<HTMLInputElement>()
 
-// 3. Fetch industries on mount
+// Computed loading & store errors
+const isLoadingIndustries = computed(() => store.loading)
+const fetchIndustryError   = computed(() => store.errors.industry)
+
+// Fetch industries on mount
 onMounted(async () => {
   businessNameRef.value?.focus()
   try {
+    // store.fetchIndustries() already toggles store.loading
     const list = await store.fetchIndustries()
     industries.value = list.map(name => ({ id: name, name }))
   } catch {
-    errors.industry = 'Could not load industries.'
+    // record error in store so computed fetchIndustryError picks it up
+    store.$patch({
+      errors: { ...store.errors, industry: 'Could not load industries.' }
+    })
   }
 })
 
-// 4. File handlers
+// File handlers
 function onLogoFileChange(e: Event): void {
   const file = (e.target as HTMLInputElement).files?.[0] ?? null
   data.businessLogo = file
-  errors.businessLogo = ''
+  localErrors.businessLogo = ''
   logoPreviewUrl.value = null
 
   if (!file) {
-    errors.businessLogo = 'Please select a logo to upload.'
-    return
-  }
-  if (!['image/jpeg', 'image/png'].includes(file.type)) {
-    errors.businessLogo = 'Invalid file type. Only JPG or PNG allowed.'
+    localErrors.businessLogo = 'Please select a logo to upload.'
+  } else if (!['image/jpeg', 'image/png'].includes(file.type)) {
+    localErrors.businessLogo = 'Only JPG or PNG allowed.'
   } else if (file.size > 2 * 1024 * 1024) {
-    errors.businessLogo = 'Maximum size is 2 MB.'
+    localErrors.businessLogo = 'Max size is 2 MB.'
   } else {
     logoPreviewUrl.value = URL.createObjectURL(file)
   }
@@ -215,30 +225,32 @@ function onLogoFileChange(e: Event): void {
 function onDocFileChange(e: Event): void {
   const file = (e.target as HTMLInputElement).files?.[0] ?? null
   data.businessDocument = file
-  errors.businessDocument = ''
+  localErrors.businessDocument = ''
 
   if (!file) {
-    errors.businessDocument = 'Please select a document to upload.'
-    return
-  }
-  if (file.type !== 'application/pdf') {
-    errors.businessDocument = 'Invalid file type. Only PDF allowed.'
+    localErrors.businessDocument = 'Please select a document to upload.'
+  } else if (file.type !== 'application/pdf') {
+    localErrors.businessDocument = 'Only PDF allowed.'
   } else if (file.size > 5 * 1024 * 1024) {
-    errors.businessDocument = 'Maximum size is 5 MB.'
+    localErrors.businessDocument = 'Max size is 5 MB.'
   }
 }
 
-// 5. Form submit: validate with Zod, then emit
+// Form submission
 function onSubmit(): void {
-  (Object.keys(errors) as (keyof BusinessDetails)[]).forEach(key => {
-    errors[key] = ''
-  })
+  // reset local errors (businessName, companySize, etc)
+  (Object.keys(localErrors) as (keyof BusinessDetails)[]).forEach(
+    key => (localErrors[key] = '')
+  )
 
+  // validate
   const result = businessDetailsSchema.safeParse(data)
   if (!result.success) {
-    for (const [field, msgs] of Object.entries(result.error.flatten().fieldErrors)) {
+    for (const [field, msgs] of Object.entries(
+      result.error.flatten().fieldErrors
+    )) {
       if (msgs?.length) {
-        errors[field as keyof BusinessDetails] = msgs[0]
+        localErrors[field as keyof BusinessDetails] = msgs[0]
       }
     }
     return
@@ -246,6 +258,17 @@ function onSubmit(): void {
 
   emit('complete', result.data)
 }
+
+// Re-upload warnings & preview flags
+const showLogoReuploadWarning = computed(
+  () => data.businessLogo != null && !(data.businessLogo instanceof File)
+)
+const showDocReuploadWarning = computed(
+  () => data.businessDocument != null && !(data.businessDocument instanceof File)
+)
+const showDocPreview = computed(
+  () => data.businessDocument instanceof File
+)
 </script>
 
 <style scoped>
