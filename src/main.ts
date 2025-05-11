@@ -1,5 +1,11 @@
+import "./index.css";
 import { createApp } from "vue";
-import "./style.css";
+import { createPinia } from "pinia";
 import App from "./App.vue";
+import { localStoragePlugin } from "@/plugins/piniaLocalStorage";
 
-createApp(App).mount("#app");
+//wire up Pinia + mount Vue app
+const pinia = createPinia();
+pinia.use(localStoragePlugin);
+
+createApp(App).use(pinia).mount("#app");
