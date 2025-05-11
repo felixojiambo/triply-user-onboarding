@@ -26,4 +26,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm ci
-      - run: npm run test:ci -- --coverage --coverageThreshold='{"global":{"branches":80,"functions":80,"lines":80,"statements":80}}'
+      - run: npm run test:ci -- --coverageThreshold='{"global":{"branches":80,"functions":80,"lines":80,"statements":80}}'
