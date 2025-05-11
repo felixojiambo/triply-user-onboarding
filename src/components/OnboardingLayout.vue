@@ -3,19 +3,19 @@
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="lg:grid lg:grid-cols-[200px_1fr] lg:gap-8">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:block p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
-        <SidebarStepper
-          :steps="steps"
-          :current="store.currentStep"
-          @navigate="goToStep"
-        />
+      <aside
+        class="hidden lg:block p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
+      >
+        <SidebarStepper :steps="steps" :current="store.currentStep" @navigate="goToStep" />
       </aside>
 
       <!-- Main Content -->
       <main class="p-6 flex justify-center">
         <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
           <!-- Header -->
-          <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+          <div
+            class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700"
+          >
             <button
               @click="onClear"
               class="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
@@ -70,16 +70,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue'
-import SidebarStepper from './SidebarStepper.vue'
-import Step1PersonalDetails from './Step1PersonalDetails.vue'
-import Step2BusinessDetails from './Step2BusinessDetails.vue'
-import Step3VerificationSummary from './Step3VerificationSummary.vue'
-import { useOnboardingStore } from '@/store/onboarding'
-import { clearState } from '@/utils/localStorageUtils'
+import { computed, watch } from "vue";
+import SidebarStepper from "./SidebarStepper.vue";
+import Step1PersonalDetails from "./Step1PersonalDetails.vue";
+import Step2BusinessDetails from "./Step2BusinessDetails.vue";
+import Step3VerificationSummary from "./Step3VerificationSummary.vue";
+import { useOnboardingStore } from "@/store/onboarding";
+import { clearState } from "@/utils/localStorageUtils";
 
-const store = useOnboardingStore()
-const steps = ['Personal', 'Business', 'Verify']
+const store = useOnboardingStore();
+const steps = ["Personal", "Business", "Verify"];
 
 // Reset verification flags any time we arrive on Step 3
 watch(
@@ -87,50 +87,53 @@ watch(
   (step) => {
     if (step === 3) {
       store.updateVerification({
-        emailCode: '',
+        emailCode: "",
         isCodeSent: false,
-        isVerified: false
-      })
+        isVerified: false,
+      });
     }
   },
   { immediate: true }
-)
+);
 
 // Pick the right component for each step
 const currentComponent = computed(() => {
   switch (store.currentStep) {
-    case 1: return Step1PersonalDetails
-    case 2: return Step2BusinessDetails
-    default: return Step3VerificationSummary
+    case 1:
+      return Step1PersonalDetails;
+    case 2:
+      return Step2BusinessDetails;
+    default:
+      return Step3VerificationSummary;
   }
-})
+});
 
 // Supply props for each step
 const componentProps = computed(() => {
-  if (store.currentStep === 1) return { initialData: store.personal }
-  if (store.currentStep === 2) return { initialData: store.business }
-  return { personal: store.personal, business: store.business }
-})
+  if (store.currentStep === 1) return { initialData: store.personal };
+  if (store.currentStep === 2) return { initialData: store.business };
+  return { personal: store.personal, business: store.business };
+});
 
 function goToStep(step: number | string) {
-  store.currentStep = Number(step)
+  store.currentStep = Number(step);
 }
 
 function onClear() {
-  if (window.confirm('This will clear all data and restart the onboarding. Continue?')) {
-    clearState()
-    store.reset()
-    store.currentStep = 1
+  if (window.confirm("This will clear all data and restart the onboarding. Continue?")) {
+    clearState();
+    store.reset();
+    store.currentStep = 1;
   }
 }
 
 function handleComplete(payload: any) {
   if (store.currentStep === 1) {
-    store.updatePersonal(payload)
-    store.next()
+    store.updatePersonal(payload);
+    store.next();
   } else if (store.currentStep === 2) {
-    store.updateBusiness(payload)
-    store.next()
+    store.updateBusiness(payload);
+    store.next();
   }
   // Step 3’s own code calls store.updateVerification({…, isVerified:true}) on submit
 }
@@ -139,6 +142,8 @@ function handleComplete(payload: any) {
 <style scoped>
 main,
 aside {
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 </style>

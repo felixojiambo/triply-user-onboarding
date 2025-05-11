@@ -16,7 +16,7 @@ const verificationService: VerificationService = {
     return new Promise<boolean>((resolve) => {
       setTimeout(() => resolve(true), 500);
     });
-  }
+  },
 };
 
 export default verificationService;

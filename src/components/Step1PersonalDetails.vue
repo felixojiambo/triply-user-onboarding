@@ -19,8 +19,7 @@
             :aria-invalid="!!errors.firstName"
             placeholder="Enter your first name"
             type="text"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
-                   dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           />
           <p v-if="errors.firstName" class="mt-1 text-sm text-red-600 dark:text-red-400">
             {{ errors.firstName }}
@@ -38,8 +37,7 @@
             :aria-invalid="!!errors.lastName"
             placeholder="Enter your last name"
             type="text"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
-                   dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           />
           <p v-if="errors.lastName" class="mt-1 text-sm text-red-600 dark:text-red-400">
             {{ errors.lastName }}
@@ -57,8 +55,7 @@
             :aria-invalid="!!errors.email"
             placeholder="you@example.com"
             type="email"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
-                   dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           />
           <p v-if="errors.email" class="mt-1 text-sm text-red-600 dark:text-red-400">
             {{ errors.email }}
@@ -76,8 +73,7 @@
             :aria-invalid="!!errors.phone"
             placeholder="+1234567890"
             type="tel"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
-                   dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
           />
           <p v-if="errors.phone" class="mt-1 text-sm text-red-600 dark:text-red-400">
             {{ errors.phone }}
@@ -97,16 +93,11 @@
             accept="image/jpeg,image/png"
             @change="onFileChange"
             :aria-invalid="!!errors.profileImage"
-            class="w-full block file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0
-                   file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700
-                   hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
+            class="w-full block file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
           />
 
           <!-- 🚨 Re-upload prompt -->
-          <p
-            v-if="showReuploadWarning"
-            class="text-yellow-600 dark:text-yellow-400 text-sm"
-          >
+          <p v-if="showReuploadWarning" class="text-yellow-600 dark:text-yellow-400 text-sm">
             Please re-upload your profile image.
           </p>
 
@@ -126,8 +117,7 @@
         <button
           type="button"
           @click="emit('back')"
-          class="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100
-                 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+          class="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
         >
           ← Back
         </button>
@@ -143,72 +133,72 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
-import { personalDetailsSchema } from '@/schemas/onboarding'
-import type { PersonalDetails } from '@/types/onboarding'
+import { ref, reactive, onMounted, computed } from "vue";
+import { personalDetailsSchema } from "@/schemas/onboarding";
+import type { PersonalDetails } from "@/types/onboarding";
 
 /** Props & emits **/
-const props = defineProps<{ initialData?: Partial<PersonalDetails> }>()
+const props = defineProps<{ initialData?: Partial<PersonalDetails> }>();
 const emit = defineEmits<{
-  (e: 'complete', payload: PersonalDetails): void
-  (e: 'back'): void
-}>()
+  (e: "complete", payload: PersonalDetails): void;
+  (e: "back"): void;
+}>();
 
 /** Reactive state **/
-const data = reactive<Partial<PersonalDetails>>({ ...(props.initialData ?? {}) })
+const data = reactive<Partial<PersonalDetails>>({ ...(props.initialData ?? {}) });
 const errors = reactive<Record<keyof PersonalDetails, string>>({
-  firstName: '',
-  lastName: '',
-  email: '',
-  phone: '',
-  profileImage: '',
-})
-const previewUrl = ref<string | null>(null)
-const firstNameRef = ref<HTMLInputElement>()
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  profileImage: "",
+});
+const previewUrl = ref<string | null>(null);
+const firstNameRef = ref<HTMLInputElement>();
 
 onMounted(() => {
-  firstNameRef.value?.focus()
-})
+  firstNameRef.value?.focus();
+});
 
 /** File-change handler **/
 function onFileChange(e: Event): void {
-  const file = (e.target as HTMLInputElement).files?.[0] ?? null
-  data.profileImage = file as File
-  errors.profileImage = ''
-  previewUrl.value = null
+  const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+  data.profileImage = file as File;
+  errors.profileImage = "";
+  previewUrl.value = null;
 
   if (file) {
-    if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      errors.profileImage = 'Only JPG or PNG allowed'
+    if (!["image/jpeg", "image/png"].includes(file.type)) {
+      errors.profileImage = "Only JPG or PNG allowed";
     } else if (file.size > 2 * 1024 * 1024) {
-      errors.profileImage = 'Max size is 2 MB'
+      errors.profileImage = "Max size is 2 MB";
     } else {
-      previewUrl.value = URL.createObjectURL(file)
+      previewUrl.value = URL.createObjectURL(file);
     }
   }
 }
 
 /** Submission handler **/
 function onSubmit(): void {
-  ;(Object.keys(errors) as (keyof PersonalDetails)[]).forEach(key => {
-    errors[key] = ''
-  })
+  (Object.keys(errors) as (keyof PersonalDetails)[]).forEach((key) => {
+    errors[key] = "";
+  });
 
-  const result = personalDetailsSchema.safeParse(data)
+  const result = personalDetailsSchema.safeParse(data);
   if (!result.success) {
     for (const [field, msgs] of Object.entries(result.error.flatten().fieldErrors)) {
-      if (msgs?.length) errors[field as keyof PersonalDetails] = msgs[0]
+      if (msgs?.length) errors[field as keyof PersonalDetails] = msgs[0];
     }
-    return
+    return;
   }
 
-  emit('complete', result.data)
+  emit("complete", result.data);
 }
 
 /** Computed: show re-upload warning if non-File was restored **/
 const showReuploadWarning = computed<boolean>(
   () => data.profileImage != null && !(data.profileImage instanceof File)
-)
+);
 </script>
 
 <style scoped>
@@ -226,7 +216,7 @@ fieldset {
 .logo-preview {
   width: 180px;
   height: 120px;
-  border: 2px solid #CBD5E0;
+  border: 2px solid #cbd5e0;
   border-radius: 8px;
   overflow: hidden;
 }

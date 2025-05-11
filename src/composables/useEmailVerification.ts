@@ -1,10 +1,10 @@
 // src/composables/useEmailVerification.ts
-import { ref, onBeforeUnmount } from 'vue';
-import { z } from 'zod';
-import verificationService from '@/services/verificationService';
+import { ref, onBeforeUnmount } from "vue";
+import { z } from "zod";
+import verificationService from "@/services/verificationService";
 
 export function useEmailVerification(email: string) {
-  const code = ref('');
+  const code = ref("");
   const error = ref<string | null>(null);
   const codeSent = ref(false);
   const sending = ref(false);
@@ -12,7 +12,7 @@ export function useEmailVerification(email: string) {
   const countdown = ref(0);
   let timer: number | null = null;
 
-  const codeSchema = z.string().length(6, 'Code must be exactly 6 digits');
+  const codeSchema = z.string().length(6, "Code must be exactly 6 digits");
 
   async function sendCode() {
     if (sending.value) return;
@@ -33,7 +33,7 @@ export function useEmailVerification(email: string) {
         }
       }, 1000);
     } catch {
-      error.value = 'Failed to send code. Please try again.';
+      error.value = "Failed to send code. Please try again.";
     } finally {
       sending.value = false;
     }
@@ -51,11 +51,11 @@ export function useEmailVerification(email: string) {
     try {
       const result = await verificationService.verifyCode(code.value);
       if (!result) {
-        error.value = 'Verification failed.';
+        error.value = "Verification failed.";
       }
       return result;
     } catch {
-      error.value = 'Verification error. Retry later.';
+      error.value = "Verification error. Retry later.";
       return false;
     } finally {
       verifying.value = false;
@@ -74,6 +74,6 @@ export function useEmailVerification(email: string) {
     verifying,
     countdown,
     sendCode,
-    verifyCode
+    verifyCode,
   };
 }

@@ -24,6 +24,7 @@ yarn dev
 
 # Build for production
 yarn build
+```
 ````
 
 ---
@@ -32,9 +33,9 @@ yarn build
 
 All API interactions are mocked in [`src/api/mockApi.ts`](src/api/mockApi.ts):
 
-* `fetchIndustriesMock()` simulates a 500 ms fetch of industry names.
-* `sendCodeMock()` simulates sending a 6-digit email code (success/failure toggle).
-* `submitOnboardingMock()` simulates final payload submission (success/failure toggle).
+- `fetchIndustriesMock()` simulates a 500 ms fetch of industry names.
+- `sendCodeMock()` simulates sending a 6-digit email code (success/failure toggle).
+- `submitOnboardingMock()` simulates final payload submission (success/failure toggle).
 
 These mocks are orchestrated by Pinia actions in `store/onboarding.ts`. You can override `simulateError` flags to test error-handling flows. No external service calls are made.
 
@@ -44,9 +45,9 @@ These mocks are orchestrated by Pinia actions in `store/onboarding.ts`. You can 
 
 We persist Pinia state (excluding raw `File`/`Blob` objects) to `localStorage` via a Pinia plugin:
 
-* **What’s saved:** All form fields *except* actual file binaries.
-* **On reload:** Stored text, selections, and boolean flags rehydrate the UI.
-* **Limitation:** Browsers cannot JSON-stringify `File`/`Blob` objects. Users must re-upload logo/profile/document files after a page refresh. We surface a gentle “Please re-upload…” prompt when the plugin restores a non-`File` placeholder.
+- **What’s saved:** All form fields _except_ actual file binaries.
+- **On reload:** Stored text, selections, and boolean flags rehydrate the UI.
+- **Limitation:** Browsers cannot JSON-stringify `File`/`Blob` objects. Users must re-upload logo/profile/document files after a page refresh. We surface a gentle “Please re-upload…” prompt when the plugin restores a non-`File` placeholder.
 
 ---
 
@@ -56,9 +57,9 @@ We persist Pinia state (excluding raw `File`/`Blob` objects) to `localStorage` v
 
 We use **Vitest** & **Vue Test Utils** to validate:
 
-* Zod schema enforcement (required fields, format, file size/type)
-* Prop-driven `complete` emits on valid data
-* File-input error handling (wrong type, oversized)
+- Zod schema enforcement (required fields, format, file size/type)
+- Prop-driven `complete` emits on valid data
+- File-input error handling (wrong type, oversized)
 
 #### Run all tests
 
@@ -87,4 +88,3 @@ src/
 └── App.vue, main.ts, etc.
 tests/                     # Vitest + Vue Test Utils specs
 ```
-
