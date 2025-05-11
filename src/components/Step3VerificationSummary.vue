@@ -12,24 +12,27 @@
       </legend>
       <div class="flex items-center space-x-3">
         <input
-          v-model="store.verification.emailCode"
+          v-model="emailCode"
           maxlength="6"
           placeholder="123456"
+          :disabled="isSubmitting"
           class="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400
                  dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-500"
         />
         <button
           type="button"
-          @click="handleSendCode"
-          :disabled="store.loading || store.verification.isCodeSent"
+          @click="sendCode"
+          :disabled="sending || codeSent"
           class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50 dark:bg-gray-600 dark:hover:bg-gray-500"
         >
-          <span v-if="store.loading && !store.verification.isCodeSent">Sending…</span>
-          <span v-else-if="store.verification.isCodeSent">Code Sent</span>
+          <span v-if="sending">Sending…</span>
+          <span v-else-if="codeSent">Resend in {{ countdown }}s</span>
           <span v-else>Send Code</span>
         </button>
       </div>
-      <p aria-live="polite" class="text-red-600 text-sm h-5">{{ store.errors.sendCode }}</p>
+      <p aria-live="polite" class="h-5 text-sm" :class="sendCodeError ? 'text-red-600 dark:text-red-400' : 'invisible'">
+        {{ sendCodeError || ' ' }}
+      </p>
     </fieldset>
 
     <!-- Data Summary -->
@@ -74,8 +77,8 @@
     </fieldset>
 
     <!-- Submission Error -->
-    <p v-if="store.errors.submit" class="text-red-600 text-sm">
-      {{ store.errors.submit }}
+    <p v-if="submitError" class="text-sm text-red-600 dark:text-red-400">
+      {{ submitError }}
     </p>
 
     <!-- Navigation Buttons -->
@@ -83,18 +86,19 @@
       <button
         type="button"
         @click="emit('back')"
+        :disabled="isSubmitting"
         class="px-5 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100
-               dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+               dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 disabled:opacity-50"
       >
         ← Back
       </button>
       <button
         type="submit"
-        :disabled="store.loading"
+        :disabled="isSubmitting"
         class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
                disabled:opacity-50"
       >
-        <span v-if="store.loading">Submitting…</span>
+        <span v-if="isSubmitting">Submitting…</span>
         <span v-else>Submit</span>
       </button>
     </div>
@@ -104,9 +108,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount } from 'vue'
 import type { PersonalDetails, BusinessDetails } from '@/types/onboarding'
+import { useEmailVerification } from '@/composables/useEmailVerification'
 import { useOnboardingStore } from '@/store/onboarding'
 
-/** Props & emits */
 const props = defineProps<{
   personal: PersonalDetails
   business: BusinessDetails
@@ -118,35 +122,47 @@ const emit = defineEmits<{
 
 const store = useOnboardingStore()
 
-/** Preview URLs */
+// Email verification composable
+const {
+  code: emailCode,
+  error: sendCodeError,
+  codeSent,
+  sending,
+  verifying,
+  countdown,
+  sendCode,
+  verifyCode
+} = useEmailVerification(props.personal.email)
+
+// Expose to template
+const emailCodeProxy = computed({
+  get: () => emailCode.value,
+  set: (val: string) => { emailCode.value = val }
+})
+const isSending    = computed(() => sending.value)
+const isSubmitting = computed(() => verifying.value)
+const submitError  = computed(() => store.errors.submit)
+
+
+// Preview URLs
 const personalImageUrl = computed<string | null>(() => {
-  const file = props.personal.profileImage
-  return file instanceof Blob ? URL.createObjectURL(file) : null
+  const f = props.personal.profileImage
+  return f instanceof Blob ? URL.createObjectURL(f) : null
 })
 const businessLogoUrl = computed<string | null>(() => {
-  const file = props.business.businessLogo
-  return file instanceof Blob ? URL.createObjectURL(file) : null
+  const f = props.business.businessLogo
+  return f instanceof Blob ? URL.createObjectURL(f) : null
 })
 
-/** Clean up object URLs */
 onBeforeUnmount(() => {
   personalImageUrl.value && URL.revokeObjectURL(personalImageUrl.value)
   businessLogoUrl.value && URL.revokeObjectURL(businessLogoUrl.value)
 })
 
-/** Send verification code via store */
-async function handleSendCode() {
-  store.errors.sendCode = ''
-  try {
-    await store.sendCode()
-  } catch (err) {
-    store.errors.sendCode = (err as Error).message
-  }
-}
-
-/** Final submit: verify and emit completion */
+// Final submit: verify code then submit onboarding
 async function onSubmit() {
   store.errors.submit = ''
+  if (!(await verifyCode())) return
   try {
     await store.submitOnboarding()
     emit('complete')
@@ -157,14 +173,13 @@ async function onSubmit() {
 </script>
 
 <style scoped>
-/* Full-width for fieldsets and inputs */
 form > fieldset,
 input,
 select {
   width: 100%;
 }
 
-/* Profile preview: circular, 120×120px */
+/* Profile preview: circular */
 .profile-preview {
   width: 120px;
   height: 120px;
@@ -178,7 +193,7 @@ select {
   object-fit: cover;
 }
 
-/* Business logo preview: rectangular, 180×120px */
+/* Business logo preview */
 .logo-preview {
   width: 180px;
   height: 120px;
