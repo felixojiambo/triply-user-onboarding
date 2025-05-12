@@ -3,7 +3,9 @@
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="lg:grid lg:grid-cols-[200px_1fr] lg:gap-8">
       <!-- Desktop Sidebar -->
-      <aside class="hidden lg:block p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+      <aside
+        class="hidden lg:block p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
+      >
         <SidebarStepper :steps="steps" :current="store.currentStep" @navigate="goToStep" />
       </aside>
 
@@ -11,8 +13,13 @@
       <main class="p-6 flex justify-center">
         <div class="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
           <!-- Header -->
-          <div class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-            <button @click="onClear" class="text-sm font-medium text-red-600 hover:underline dark:text-red-400">
+          <div
+            class="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700"
+          >
+            <button
+              @click="onClear"
+              class="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
+            >
               Clear &amp; Restart
             </button>
             <!-- Mobile Stepper Dropdown -->
@@ -126,6 +133,8 @@ function handleComplete(payload: any) {
 <style scoped>
 main,
 aside {
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 </style>
