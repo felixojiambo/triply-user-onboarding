@@ -39,7 +39,6 @@
           <!-- Step Content or Success Panel -->
           <div class="p-6">
             <div class="max-w-md mx-auto space-y-6">
-              <!-- Success Panel: only on step 3 after real verification -->
               <div
                 v-if="store.currentStep === 3 && store.verification.isVerified"
                 class="text-center space-y-2 p-6"
@@ -51,11 +50,10 @@
                   Thanks, {{ store.personal.firstName }}—we’ve received your info.
                 </p>
               </div>
-
-              <!-- Active Step Component -->
               <div v-else>
                 <component
                   :is="currentComponent"
+                  :key="`${store.currentStep}-${resetCounter}`"
                   v-bind="componentProps"
                   @complete="handleComplete"
                   @back="store.prev()"
@@ -70,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { computed, watch, ref } from "vue";
 import SidebarStepper from "./SidebarStepper.vue";
 import Step1PersonalDetails from "./Step1PersonalDetails.vue";
 import Step2BusinessDetails from "./Step2BusinessDetails.vue";
@@ -78,10 +76,10 @@ import Step3VerificationSummary from "./Step3VerificationSummary.vue";
 import { useOnboardingStore } from "@/store/onboarding";
 import { clearState } from "@/utils/localStorageUtils";
 
+const resetCounter = ref(0);
 const store = useOnboardingStore();
 const steps = ["Personal", "Business", "Verify"];
 
-// Reset verification flags any time we arrive on Step 3
 watch(
   () => store.currentStep,
   (step) => {
@@ -96,19 +94,12 @@ watch(
   { immediate: true }
 );
 
-// Pick the right component for each step
 const currentComponent = computed(() => {
-  switch (store.currentStep) {
-    case 1:
-      return Step1PersonalDetails;
-    case 2:
-      return Step2BusinessDetails;
-    default:
-      return Step3VerificationSummary;
-  }
+  if (store.currentStep === 1) return Step1PersonalDetails;
+  if (store.currentStep === 2) return Step2BusinessDetails;
+  return Step3VerificationSummary;
 });
 
-// Supply props for each step
 const componentProps = computed(() => {
   if (store.currentStep === 1) return { initialData: store.personal };
   if (store.currentStep === 2) return { initialData: store.business };
@@ -123,6 +114,7 @@ function onClear() {
   if (window.confirm("This will clear all data and restart the onboarding. Continue?")) {
     clearState();
     store.reset();
+    resetCounter.value++;
     store.currentStep = 1;
   }
 }
@@ -135,7 +127,6 @@ function handleComplete(payload: any) {
     store.updateBusiness(payload);
     store.next();
   }
-  // Step 3’s own code calls store.updateVerification({…, isVerified:true}) on submit
 }
 </script>
 
