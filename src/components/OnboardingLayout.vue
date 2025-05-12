@@ -1,4 +1,3 @@
-<!-- src/components/OnboardingLayout.vue -->
 <template>
   <div class="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
     <div class="lg:grid lg:grid-cols-[200px_1fr] lg:gap-8">
@@ -6,7 +5,11 @@
       <aside
         class="hidden lg:block p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
       >
-        <SidebarStepper :steps="steps" :current="store.currentStep" @navigate="goToStep" />
+        <SidebarStepper
+          :steps="steps"
+          :current="store.currentStep"
+          @navigate="goToStep"
+        />
       </aside>
 
       <!-- Main Content -->
@@ -29,7 +32,11 @@
                 @change="goToStep($event.target.value)"
                 class="px-3 py-2 text-sm border rounded bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option v-for="(label, idx) in steps" :key="idx" :value="idx + 1">
+                <option
+                  v-for="(label, idx) in steps"
+                  :key="idx"
+                  :value="idx + 1"
+                >
                   {{ idx + 1 }}. {{ label }}
                 </option>
               </select>
@@ -56,6 +63,7 @@
               <div v-else>
                 <component
                   :is="currentComponent"
+                  :key="`${store.currentStep}-${resetCounter}`"
                   v-bind="componentProps"
                   @complete="handleComplete"
                   @back="store.prev()"
@@ -70,24 +78,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from "vue";
-import SidebarStepper from "./SidebarStepper.vue";
-import Step1PersonalDetails from "./Step1PersonalDetails.vue";
-import Step2BusinessDetails from "./Step2BusinessDetails.vue";
-import Step3VerificationSummary from "./Step3VerificationSummary.vue";
-import { useOnboardingStore } from "@/store/onboarding";
-import { clearState } from "@/utils/localStorageUtils";
+import { computed, watch, ref } from 'vue';
+import SidebarStepper from './SidebarStepper.vue';
+import Step1PersonalDetails from './Step1PersonalDetails.vue';
+import Step2BusinessDetails from './Step2BusinessDetails.vue';
+import Step3VerificationSummary from './Step3VerificationSummary.vue';
+import { useOnboardingStore } from '@/store/onboarding';
+import { clearState } from '@/utils/localStorageUtils';
+
+// Counter to force remount of the current step component
+const resetCounter = ref(0);
 
 const store = useOnboardingStore();
-const steps = ["Personal", "Business", "Verify"];
+const steps = ['Personal', 'Business', 'Verify'];
 
-// Reset verification flags any time we arrive on Step 3
+// Reset verification flags whenever we land on Step 3
 watch(
   () => store.currentStep,
   (step) => {
     if (step === 3) {
       store.updateVerification({
-        emailCode: "",
+        emailCode: '',
         isCodeSent: false,
         isVerified: false,
       });
@@ -96,7 +107,7 @@ watch(
   { immediate: true }
 );
 
-// Pick the right component for each step
+// Determine which component to render
 const currentComponent = computed(() => {
   switch (store.currentStep) {
     case 1:
@@ -108,7 +119,7 @@ const currentComponent = computed(() => {
   }
 });
 
-// Supply props for each step
+// Props to pass down to each step
 const componentProps = computed(() => {
   if (store.currentStep === 1) return { initialData: store.personal };
   if (store.currentStep === 2) return { initialData: store.business };
@@ -120,9 +131,15 @@ function goToStep(step: number | string) {
 }
 
 function onClear() {
-  if (window.confirm("This will clear all data and restart the onboarding. Continue?")) {
+  if (
+    window.confirm(
+      'This will clear all data and restart the onboarding. Continue?'
+    )
+  ) {
     clearState();
     store.reset();
+    // Force Vue to recreate the step component instance
+    resetCounter.value++;
     store.currentStep = 1;
   }
 }
@@ -135,7 +152,7 @@ function handleComplete(payload: any) {
     store.updateBusiness(payload);
     store.next();
   }
-  // Step 3’s own code calls store.updateVerification({…, isVerified:true}) on submit
+  // On Step 3, the component itself will mark verification as complete
 }
 </script>
 
