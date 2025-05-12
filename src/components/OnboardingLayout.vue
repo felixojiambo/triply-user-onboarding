@@ -5,11 +5,7 @@
       <aside
         class="hidden lg:block p-6 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
       >
-        <SidebarStepper
-          :steps="steps"
-          :current="store.currentStep"
-          @navigate="goToStep"
-        />
+        <SidebarStepper :steps="steps" :current="store.currentStep" @navigate="goToStep" />
       </aside>
 
       <!-- Main Content -->
@@ -32,11 +28,7 @@
                 @change="goToStep($event.target.value)"
                 class="px-3 py-2 text-sm border rounded bg-white dark:bg-gray-700 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option
-                  v-for="(label, idx) in steps"
-                  :key="idx"
-                  :value="idx + 1"
-                >
+                <option v-for="(label, idx) in steps" :key="idx" :value="idx + 1">
                   {{ idx + 1 }}. {{ label }}
                 </option>
               </select>
@@ -78,19 +70,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, ref } from 'vue';
-import SidebarStepper from './SidebarStepper.vue';
-import Step1PersonalDetails from './Step1PersonalDetails.vue';
-import Step2BusinessDetails from './Step2BusinessDetails.vue';
-import Step3VerificationSummary from './Step3VerificationSummary.vue';
-import { useOnboardingStore } from '@/store/onboarding';
-import { clearState } from '@/utils/localStorageUtils';
+import { computed, watch, ref } from "vue";
+import SidebarStepper from "./SidebarStepper.vue";
+import Step1PersonalDetails from "./Step1PersonalDetails.vue";
+import Step2BusinessDetails from "./Step2BusinessDetails.vue";
+import Step3VerificationSummary from "./Step3VerificationSummary.vue";
+import { useOnboardingStore } from "@/store/onboarding";
+import { clearState } from "@/utils/localStorageUtils";
 
 // Counter to force remount of the current step component
 const resetCounter = ref(0);
 
 const store = useOnboardingStore();
-const steps = ['Personal', 'Business', 'Verify'];
+const steps = ["Personal", "Business", "Verify"];
 
 // Reset verification flags whenever we land on Step 3
 watch(
@@ -98,7 +90,7 @@ watch(
   (step) => {
     if (step === 3) {
       store.updateVerification({
-        emailCode: '',
+        emailCode: "",
         isCodeSent: false,
         isVerified: false,
       });
@@ -131,11 +123,7 @@ function goToStep(step: number | string) {
 }
 
 function onClear() {
-  if (
-    window.confirm(
-      'This will clear all data and restart the onboarding. Continue?'
-    )
-  ) {
+  if (window.confirm("This will clear all data and restart the onboarding. Continue?")) {
     clearState();
     store.reset();
     // Force Vue to recreate the step component instance
